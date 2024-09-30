@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, test } from 'vitest'
+import { isWindows } from '../../shared/utils'
 import {
   asyncFlatten,
   bareImportRE,
@@ -14,7 +15,6 @@ import {
   processSrcSetSync,
   resolveHostname,
 } from '../utils'
-import { isWindows } from '../../shared/utils'
 
 describe('bareImportRE', () => {
   test('should work with normal package name', () => {
@@ -112,6 +112,12 @@ describe('injectQuery', () => {
     expect(injectQuery('/usr/vite/東京 %20 hello', 'direct')).toEqual(
       '/usr/vite/東京 %20 hello?direct',
     )
+  })
+
+  test('path with url-encoded path as query parameter', () => {
+    const src = '/src/module.ts?url=https%3A%2F%2Fusr.vite%2F'
+    const expected = '/src/module.ts?t=1234&url=https%3A%2F%2Fusr.vite%2F'
+    expect(injectQuery(src, 't=1234')).toEqual(expected)
   })
 })
 
